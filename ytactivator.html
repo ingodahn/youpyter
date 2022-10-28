@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
+  <script src="https://cdn.jsdelivr.net/remarkable/1.7.1/remarkable.min.js"></script>
+  <script type="text/javascript">window.MathJax = {
+      tex: {
+        inlineMath: [["$", "$"], ["\\(", "\\)"]],
+        displayMath: [["$$", "$$"], ["\\[", "\\]"]],
+        processEscapes: true,
+        processEnvironments: true,
+      },
+      options: {
+        renderActions: { /* remove when dropping MathJax2 compatibility */
+          find_script_mathtex: [10, function (doc) {
+            for (const node of document.querySelectorAll('script[type^="math/tex"]')) {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = { node: text, delim: '', n: 0 };
+              math.end = { node: text, delim: '', n: 0 };
+              doc.math.push(math);
+            }
+          }, '']
+        }
+      }
+    };</script>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js"></script>
+  </script>
+  <script src="https://sagecell.sagemath.org/embedded_sagecell.js"></script>
+  <link rel="stylesheet" href="./ytactivator.css">
+</head>
+
+<body>
+  <div id="main">
+    <h2 id="welcome">Welcome to the YouTube Activator $a\cup b$</h2>
+
+    <div class="file-upload">
+      <button class="file-upload-btn" type="button" onclick="$('.file-upload-input').trigger( 'click' )">Add
+        Jupyter Notebook</button>
+
+      <div class="image-upload-wrap">
+        <input class="file-upload-input" type='file' onchange="readURL(this);" accept=".ipynb" />
+        <div class="drag-text">
+          <h3>Drag and drop a file</h3>
+          <p>or select using ADD button above</p>
+        </div>
+      </div>
+    </div>
+    <div id="player-wrapper">
+
+
+    </div>
+  </div>
+
+  <script src="./ytactivator.js"></script>
+  <script>
+  //makeSageCells()</script>
+</body>
+
+</html>
