@@ -36,13 +36,12 @@
 
 <body>
   <div id="main">
-    <h2 id="welcome">Welcome to the YouTube Activator $a\cup b$</h2>
-
+    
     <div class="file-upload">
+      <h2 id="welcome">Welcome to the YouTube Activator</h2>
       <button class="file-upload-btn" type="button" onclick="$('.file-upload-input').trigger( 'click' )">Add
         Jupyter Notebook</button>
-
-      <div class="image-upload-wrap">
+      <div class="file-upload-wrap">
         <input class="file-upload-input" type='file' onchange="readURL(this);" accept=".ipynb" />
         <div class="drag-text">
           <h3>Drag and drop a file</h3>
@@ -50,10 +49,16 @@
         </div>
       </div>
     </div>
-    <div id="player-wrapper">
-
-
-    </div>
+    <row>
+      <div id="player-nav">
+        <div id="player-wrapper"></div>
+        <select id="toc" onchange="if (this.selectedIndex) ytSeekTo(this.selectedIndex)"></select>
+      </div>
+    </row>
+    <row>
+      <div id="notebook-wrapper"></div>
+    </row>
+    
   </div>
 
   <script src="./ytactivator.js"></script>

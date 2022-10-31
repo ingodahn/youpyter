@@ -23,20 +23,20 @@ var evaluatedCells = [];
 
 function activate(nbString) {
     try {
-        $('#welcome').hide();
+        $('.file-upload').remove();
         var nb = JSON.parse(atob(nbString.split(',')[1]));
         kernel = nb.metadata.kernelspec.name;
-        console.log('Kernel: ' + kernel);
         if (kernel.includes('sage')) {
             kernel = 'sage';
         }
-        var code = "";
+        
         for (var i = 0; i < nb.cells.length; i++) {
             var cell = nb.cells[i];
             if (cell.cell_type == "code") {
-                $('#main').append(makeCodeCell(cell, i));
+                $('#notebook-wrapper').append(makeCodeCell(cell, i));
             } else {
-                $('#main').append(makeMarkdownCell(cell, i));
+                let mdcell=makeMarkdownCell(cell, i);
+                if (mdcell) $('#notebook-wrapper').append(mdcell);
             }
         }
         window.MathJax.typeset();
@@ -47,28 +47,29 @@ function activate(nbString) {
 
 function makeCodeCell(cell, i) {
     var code = (cell.source) ? cell.source.join('') : "";
-    //var output = cell.outputs;
     var cellDiv = $('<div class="cell" id="cell' + i + '"></div>');
     cellDiv.append('<div class="cell-input">' + sageCell(code) + '</div>');
-    //cellDiv.append('<div class="cell-output">' + output + '</div>');
     addCell(cell, i);
     return cellDiv;
 }
 
 function makeMarkdownCell(cell, i) {
     var mdContent = cell.source.join('');
+    console.log('Markdown cell: ', mdContent);
     let isVideo = hasVideo(mdContent);
     if (isVideo) {
-        var cellDiv = $('<div class="cell" id="player-wrapper"></div>');
+        var cellDiv = $('<div class="cell" id="cell' + i + '"></div>');
         cellDiv.append(buttonRow);
         cellDiv.append(makePlayer(isVideo.id, isVideo.width, isVideo.height));
         getSections(mdContent);
         loadYtApi();
-        return cellDiv;
+        $('#player-wrapper').append(cellDiv);
+        $('#toc').css('visibility', 'visible');
+        return null;
     } else {
         var md = new Remarkable({ html: true, breaks: true, linkify: true });
         var html = md.render(mdContent);
-        var cellDiv = $('<div class="cell" id="cell' + i + '"></div>');
+        var cellDiv = $('<div class="cell row" id="cell' + i + '"></div>');
         cellDiv.append('<div class="cell-input">' + html + '</div>');
         addCell(cell, i);
         return cellDiv;
@@ -118,12 +119,21 @@ function ytVolDown() {
     }
 }
 
+function ytSeekTo(index) {
+    var time = segments[index].start;
+    console.log('seeking to ', time);
+    player.seekTo(time, true);
+    syncTo(time);
+}
+
 /* The video cell must have an embedded youtube video. */
 
 function hasVideo(mdContent) {
+    console.log('hasVideo');
     let reId = /\"https:\/\/www.youtube.com\/embed\/([^\"]*)\"/mg;
     let match = reId.exec(mdContent);
     if (match) {
+        console.log('match', match);
         let ytId = match[1];
         let reWidth = /width=\"([^\"]*)\"/mg;
         let matchWidth = reWidth.exec(mdContent);
@@ -138,12 +148,14 @@ function hasVideo(mdContent) {
             height = matchHeight[1];
         }
         let vpars = { id: ytId, width: width, height: height };
+        console.log('Video parameters: ', vpars);
         return vpars;
     } else return null;
 
 }
 
 function getSections(cell) {
+    console.log('getSections');
     let cellLines = cell.split('\n');
     for (let i = 0; i < cellLines.length; i++) {
         let line = cellLines[i];
@@ -155,6 +167,7 @@ function getSections(cell) {
                 segments.push(section);
                 breakpoints.add(section.start);
                 breakpoints.add(section.end);
+                $('#toc').append('<option value="' + section.start + '">' + section.title + '</option>');
             }
         }
     }
@@ -187,18 +200,10 @@ function makeSageCells() {
             $('.sagecell_evalButton').click(function () {
                 let node = this.parentNode.parentNode.parentNode.parentNode;
                 let cell = node.id;
-                let cellIndex = cell.replace('cell', '');
                 nbCells.find(c => c.content == cell).cellEvaluated = true;
-                syncTo(lastTime)
+                $('#'+cell).addClass('evaluated');
             })
         },
-        /*
-        template: sagecell.templates.minimal,
-        evalButtonText: "Run",
-        linked: false,
-        autoeval: false,
-        languages: ["sage"],
-        */
         /*
         inputLocation: ".sagecell",
         template: sagecell.templates.minimal,
@@ -347,15 +352,16 @@ function makePlayer(id, width, height) {
 }
 
 function syncTo(time) {
-    console.log('ya-280: syncTo', time);
+    $('.cell').removeClass('current-cell');
+    let firstcell = null;
     for (var i = 0; i < nbCells.length; i++) {
-        if (time >= nbCells[i].start && time < nbCells[i].end && evaluatedBefore(nbCells[i].content)) {
-            $('#'+nbCells[i].content).show();
-        } else {
-            $("#" + nbCells[i].content).hide();
+        if (time >= nbCells[i].start && time < nbCells[i].end) {
+            let cname='#'+nbCells[i].content;
+            if (!firstcell) firstcell = cname;
+            $(cname).addClass('current-cell');
         }
     }
-    //makeSageCells();
+    $(firstcell)[0].scrollIntoView({behavior: "smooth", block: "center", inline: "nearest"});
 }
 
 
