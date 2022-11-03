@@ -90,9 +90,10 @@ body {
   width: 100%;
   background-color: white;
   z-index: 100;
+  visibility: hidden;
 }
 
-#player-wrappe {
+#player-wrapper {
   text-align: center;
   position: sticky;
   top: 0;
@@ -140,11 +141,4 @@ body {
   border-right-color: red;
 }
 
-#toc {
-  visibility: hidden;
-}
-
-#calcNext {
-  visibility: hidden;
-}
 

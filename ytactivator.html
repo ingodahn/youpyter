@@ -54,6 +54,7 @@
         <div id="player-wrapper"></div>
         <select id="toc" onchange="if (this.selectedIndex) ytSeekTo(this.selectedIndex)"></select>
         <button id="calcNext" type="button" class="btn btn-primary" onclick="calcNext()">Next Calculation</button>
+        <button id="save" type="button" class="btn btn-primary" onclick="saveHtml()">Save</button>
       </div>
     </row>
     <row>
@@ -61,10 +62,12 @@
     </row>
     
   </div>
-
+<!--
   <script src="./ytactivator.js"></script>
-  <script>
-  //makeSageCells()</script>
+-->
+  <script src="./ytcontrol.js"></script>
+  <script src="./ytrunner.js"></script>
+  <script src="ytplayer.js"></script>
 </body>
 
 </html>
