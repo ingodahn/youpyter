@@ -120,14 +120,31 @@ body {
   border-right-color: blue;
 }
 
-.evaluated {
+.current-cell.evaluated {
   padding: 1em;
   border-style: none solid none solid;
   border-left-color: green;
   border-right-color: green;
 }
 
+.current-cell.evaluable {
+  padding: 1em;
+  border-style: none dotted none dotted;
+  border-left-color: green;
+  border-right-color: green;
+}
+.current-cell.notEvaluated {
+  padding: 1em;
+  border-style: none dotted none dotted;
+  border-left-color: red;
+  border-right-color: red;
+}
+
 #toc {
+  visibility: hidden;
+}
+
+#calcNext {
   visibility: hidden;
 }
 

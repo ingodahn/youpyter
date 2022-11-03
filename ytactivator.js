@@ -29,13 +29,13 @@ function activate(nbString) {
         if (kernel.includes('sage')) {
             kernel = 'sage';
         }
-        
+
         for (var i = 0; i < nb.cells.length; i++) {
             var cell = nb.cells[i];
             if (cell.cell_type == "code") {
                 $('#notebook-wrapper').append(makeCodeCell(cell, i));
             } else {
-                let mdcell=makeMarkdownCell(cell, i);
+                let mdcell = makeMarkdownCell(cell, i);
                 if (mdcell) $('#notebook-wrapper').append(mdcell);
             }
         }
@@ -50,12 +50,12 @@ function makeCodeCell(cell, i) {
     var cellDiv = $('<div class="cell" id="cell' + i + '"></div>');
     cellDiv.append('<div class="cell-input">' + sageCell(code) + '</div>');
     addCell(cell, i);
+    $('#calcNext').css('visibility', 'visible');
     return cellDiv;
 }
 
 function makeMarkdownCell(cell, i) {
     var mdContent = cell.source.join('');
-    console.log('Markdown cell: ', mdContent);
     let isVideo = hasVideo(mdContent);
     if (isVideo) {
         var cellDiv = $('<div class="cell" id="cell' + i + '"></div>');
@@ -129,11 +129,9 @@ function ytSeekTo(index) {
 /* The video cell must have an embedded youtube video. */
 
 function hasVideo(mdContent) {
-    console.log('hasVideo');
     let reId = /\"https:\/\/www.youtube.com\/embed\/([^\"]*)\"/mg;
     let match = reId.exec(mdContent);
     if (match) {
-        console.log('match', match);
         let ytId = match[1];
         let reWidth = /width=\"([^\"]*)\"/mg;
         let matchWidth = reWidth.exec(mdContent);
@@ -148,14 +146,12 @@ function hasVideo(mdContent) {
             height = matchHeight[1];
         }
         let vpars = { id: ytId, width: width, height: height };
-        console.log('Video parameters: ', vpars);
         return vpars;
     } else return null;
 
 }
 
 function getSections(cell) {
-    console.log('getSections');
     let cellLines = cell.split('\n');
     for (let i = 0; i < cellLines.length; i++) {
         let line = cellLines[i];
@@ -187,7 +183,6 @@ function addCell(cell, i) {
 }
 
 function sageCell(code) {
-    console.log('Sage cell: ' + code);
     return '<div class="compute"><script type="text/x-sage">' + code + '</script></div>';
 }
 
@@ -200,8 +195,10 @@ function makeSageCells() {
             $('.sagecell_evalButton').click(function () {
                 let node = this.parentNode.parentNode.parentNode.parentNode;
                 let cell = node.id;
-                nbCells.find(c => c.content == cell).cellEvaluated = true;
-                $('#'+cell).addClass('evaluated');
+                //nbCells.find(c => c.content == cell).cellEvaluated = true;
+                let cei = nbCells.findIndex(c => c.content == cell);
+                nbCells[cei].cellEvaluated = true;
+                checkEvaluated()
             })
         },
         /*
@@ -244,8 +241,47 @@ function makeSageCells() {
     });
 }
 
+function checkEvaluated() {
+    let evaluable = null;
+    $('.cell').removeClass(['evaluated', 'evaluable', 'notEvaluated']);
+    for (let i = 0; i < nbCells.length; i++) {
+        if (nbCells[i].cellType == 'code') {
+            if (nbCells[i].cellEvaluated) {
+                $('#' + nbCells[i].content).addClass('evaluated');
+            } else {
+
+                if (evaluable == null) {
+                    evaluable = nbCells[i].content;
+                    $('#' + evaluable).addClass('evaluable');
+                } else {
+                    $('#' + nbCells[i].content).addClass('notEvaluated');
+                }
+            }
+        }
+    }
+    if (evaluable) {
+        $('#calcNext').prop('disabled', false);
+    } else {
+        $('#calcNext').prop('disabled', true);
+    }
+    return evaluable;
+}
+
+function calcNext() {
+    let nextTime = null;
+    for (let i = 0; i < nbCells.length; i++) {
+        if (nbCells[i].cellType == 'code') {
+            if (!nbCells[i].cellEvaluated) {
+                nextTime = nbCells[i].start;
+                break;
+            }
+        }
+    }
+    player.seekTo(nextTime);
+    syncTo(nextTime);
+}
 function evaluatedBefore(cellIndex) {
-    let evalBefore = true, i=0;
+    let evalBefore = true, i = 0;
     while (i < nbCells.length) {
         let c = nbCells[i];
         if (c.content == cellIndex) break;
@@ -255,7 +291,7 @@ function evaluatedBefore(cellIndex) {
         }
         i++;
     }
-    return evalBefore;   
+    return evalBefore;
 }
 
 /* Setting up youtube player */
@@ -356,12 +392,13 @@ function syncTo(time) {
     let firstcell = null;
     for (var i = 0; i < nbCells.length; i++) {
         if (time >= nbCells[i].start && time < nbCells[i].end) {
-            let cname='#'+nbCells[i].content;
+            let cname = '#' + nbCells[i].content;
             if (!firstcell) firstcell = cname;
             $(cname).addClass('current-cell');
         }
     }
-    $(firstcell)[0].scrollIntoView({behavior: "smooth", block: "center", inline: "nearest"});
+    checkEvaluated();
+    $(firstcell)[0].scrollIntoView({ behavior: "smooth", block: "center", inline: "nearest" });
 }
 
 
