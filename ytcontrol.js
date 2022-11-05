@@ -70,7 +70,6 @@ function checkTime() {
     var currentTime = Math.floor(player.getCurrentTime());
     if (currentTime != lastTime) {
         if (data.breakpoints[currentTime]) {
-            console.log('260: ' + currentTime);
             ytPause();
             syncTo(currentTime);
             lastTime = currentTime;
@@ -124,7 +123,6 @@ function ytVolDown() {
 
 function ytSeekTo(index) {
     var time = data.segments[index].start;
-    console.log('seeking to ', time);
     player.seekTo(time, true);
     syncTo(time);
 }
