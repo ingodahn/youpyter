@@ -5,14 +5,6 @@ function getBrowserLanguage() {
     return lang;
 }
 
-var data = {
-  breakpoints: new Set(),
-  segments: [],
-  nbCells: [],
-  endTime: 1000000,
-  kernel: 'sage',
-}
-
 function syncTo(time) {
   $('.cell').removeClass('current-cell');
   let firstcell = null;
@@ -62,7 +54,7 @@ function makeSageCells() {
   sagecell.makeSagecell({
       inputLocation: ".compute",
       linked: true,
-      language: kernel,
+      language: data.kernel,
       callback: () => {
           $('.sagecell_evalButton').click(function () {
               let node = this.parentNode.parentNode.parentNode.parentNode;
@@ -131,29 +123,80 @@ function saveHtml() {
   saveAddSageCells(".nb-code-cell",".sagecell_input,.sagecell_output");
   $('script').html().replace(/\u200B/g,'');
   var blob = new Blob(['<!DOCTYPE html>\n<html>\n<head>'+
-  $('head').html()+
-  '</head>\n<body>\n<div id="main">'+
-  $('#main').html()+
+ `<head>
+ <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+ <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
+ <script src="`+data.system+`/vendor/js/FileSaver.min.js"></script>
+ <script src="https://cdn.jsdelivr.net/remarkable/1.7.1/remarkable.min.js"></script>
+ <script type="text/javascript">window.MathJax = {
+     tex: {
+       inlineMath: [["$", "$"], ["\\(", "\\)"]],
+       displayMath: [["$$", "$$"], ["\\[", "\\]"]],
+       processEscapes: true,
+       processEnvironments: true,
+     },
+     options: {
+       renderActions: { /* remove when dropping MathJax2 compatibility */
+         find_script_mathtex: [10, function (doc) {
+           for (const node of document.querySelectorAll('script[type^="math/tex"]')) {
+             const display = !!node.type.match(/; *mode=display/);
+             const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+             const text = document.createTextNode('');
+             node.parentNode.replaceChild(text, node);
+             math.start = { node: text, delim: '', n: 0 };
+             math.end = { node: text, delim: '', n: 0 };
+             doc.math.push(math);
+           }
+         }, '']
+       }
+     }
+   };</script>
+ <script src="https://sagecell.sagemath.org/embedded_sagecell.js"></script>
+ <script src="`+data.system+`/ytcontrol.js"></script>
+ <script src="`+data.system+`/ytrunner.js"></script>
+ <link rel="stylesheet" href="`+data.system+`/ytactivator.css">
+</head>\n<body>\n<div id="main">
+<row>
+      <div id="player-nav">
+        <div id="player-wrapper"></div>
+        <select id="toc" onchange="if (this.selectedIndex) ytSeekTo(this.selectedIndex)"></select>
+        <button id="calcNext" type="button" class="btn btn-primary" onclick="calcNext()">Next Calculation</button>
+        <button id="save" type="button" class="btn btn-primary" onclick="saveHtml()">Save</button>
+      </div>
+    </row>`+
+  $('#notebook-wrapper').html()+
   `</div>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-ygbV9kiqUc6oa4msXn9868pTtWMgiQaeYH7/t7LECLbyPA2x65Kgf80OJFdroafW" crossorigin="anonymous"></script>
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-  <script src="https://sagecell.sagemath.org/embedded_sagecell.js"></script>
-  <script src="`+playerConfig.playerPath+`/vendor/js/FileSaver.min.js"></script>
-  <script src="`+playerConfig.playerPath+`/nbplayerConfig.js"></script>
-  <script src="`+playerConfig.playerPath+`/js/nbrunner.min.js"></script>
   <script>
-    playerConfig=`+JSON.stringify(playerConfig)+`;
-    playerMode=`+JSON.stringify(playerMode)+`;
-    makeMenu();
-    localize();
-    loadStatus();
-    makeSageCells(playerConfig);
-    launchPlayer();
+    var data =`+ JSON.stringify(data) +`;
+    makeYtPlayer();
+    makeToc();
+    makeSageCells();
   </script>
   </body></html>`], {type: "text/plain;charset=utf-8"});
-  saveAs(blob, playerConfig.name+".html");
+  saveAs(blob, "testplayer.html");
   let saveWarnMsg='Do NOT use this page anymore - open your saved copy or reload this page.';
   var lang=getBrowserLanguage();
   if (lang == 'de') saveWarnMsg='Bitte die Seite neu laden oder die gespeicherte Kopie öffnen.';
   $('#navbar').html('<div class="save-warning">'+saveWarnMsg+'</div>');
+}
+
+function saveAddSageCells(rootNode,delNode) {
+  let cell = `
+  <div class='compute'>
+    <script type='text/x-sage'>1+1</script>
+  </div>`;
+  $(rootNode).each(function () {
+    $(this).append(cell);
+    let scScript=getSageInput($(this));
+    scScript=scScript.replace(/\u200B/g,'')
+    $(this).find('.compute script').text(scScript);
+    if (delNode) $(this).find(delNode).remove();
+    $(this).find('.compute').hide();
+  });
+}
+
+function makeToc() {
+  for (let i = 0; i< data.segments.length; i++) {
+    $('#toc').append('<option value="' + data.segments[i].start + '">'+data.segments[i].title+'</option>');
+  }
 }

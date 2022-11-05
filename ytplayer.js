@@ -1,3 +1,14 @@
+var data = {
+    breakpoints: {},
+    segments: [],
+    nbCells: [],
+    endTime: 1000000,
+    kernel: 'sage',
+    system: './ytactivator',
+    video: null,
+  }
+  
+
 function readURL(input) {
     if (input.files && input.files[0]) {
 
@@ -53,12 +64,14 @@ function makeMarkdownCell(cell, i) {
     if (isVideo) {
         var cellDiv = $('<div class="cell" id="cell' + i + '"></div>');
         cellDiv.append(buttonRow);
-        cellDiv.append(makePlayer(isVideo.id, isVideo.width, isVideo.height));
+        data.video = { videoId: isVideo.id, width: isVideo.width, height: isVideo.height };
+        cellDiv.append(makeYtPlayer());
         getSections(mdContent);
-        loadYtApi();
-        $('#player-wrapper').append(cellDiv);
-        $('#player-nav').css('visibility', 'visible');
-        $('#toc').css('visibility', 'visible');
+        //loadYtApi();
+        makeYtPlayer();
+        //$('#player-wrapper').append(cellDiv);
+        //$('#player-nav').css('visibility', 'visible');
+        //$('#toc').css('visibility', 'visible');
         return null;
     } else {
         var md = new Remarkable({ html: true, breaks: true, linkify: true });
@@ -102,12 +115,12 @@ function getSections(cell) {
             if (match[0].indexOf(':') >= 0) {
                 let section = { title: match[3].trim(), start: time2sec(match[1].trim()), end: time2sec(match[2].trim()), id: match[4].trim() };
                 data.segments.push(section);
-                data.breakpoints.add(section.start);
-                data.breakpoints.add(section.end);
-                $('#toc').append('<option value="' + section.start + '">' + section.title + '</option>');
+                data.breakpoints[section.start] = true; // breakpoints should be a set, but that cannot be serialized
+                data.breakpoints[section.end] = true;
             }
         }
     }
+    makeToc();
 }
 
 function time2sec(time) {

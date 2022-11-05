@@ -1,10 +1,6 @@
 /* Setting up youtube player */
 var player;
-var playerConfig = {
-    width: 640,
-    height: 480,
-    videoId: '',
-}
+
 const buttonRow = `
 <div class="row">
     <div class="btn-group">
@@ -36,9 +32,9 @@ function loadYtApi() {
 // Create youtube player (function called by YouTube API)
 function onYouTubeIframeAPIReady() {
     player = new YT.Player("player-div", {
-        width: playerConfig.width,
-        videoId: playerConfig.videoId,
-        height: playerConfig.height,
+        width: data.video.width,
+        videoId: data.video.videoId,
+        height: data.video.height,
         playerVars: {
             autoplay: 0,
             controls: 0,
@@ -73,7 +69,7 @@ function checkTime() {
     if (player.getPlayerState() != YT.PlayerState.PLAYING) return;
     var currentTime = Math.floor(player.getCurrentTime());
     if (currentTime != lastTime) {
-        if (data.breakpoints.has(currentTime)) {
+        if (data.breakpoints[currentTime]) {
             console.log('260: ' + currentTime);
             ytPause();
             syncTo(currentTime);
@@ -127,15 +123,16 @@ function ytVolDown() {
 }
 
 function ytSeekTo(index) {
-    var time = segments[index].start;
+    var time = data.segments[index].start;
     console.log('seeking to ', time);
     player.seekTo(time, true);
     syncTo(time);
 }
 
-// End youtube player setup
-function makePlayer(id, width, height) {
-    playerConfig.videoId = id;
-    playerConfig.width = width;
-    playerConfig.height = height;
+function makeYtPlayer() {
+    $('#player-wrapper').html(buttonRow);
+    loadYtApi();
+    $('#player-nav').css('visibility', 'visible');
 }
+
+// End youtube player setup
