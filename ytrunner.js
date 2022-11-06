@@ -129,30 +129,10 @@ function saveHtml() {
  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
  <script src="`+data.system+`/vendor/js/FileSaver.min.js"></script>
  <script src="https://cdn.jsdelivr.net/remarkable/1.7.1/remarkable.min.js"></script>
- <script type="text/javascript">window.MathJax = {
-     tex: {
-       inlineMath: [["$", "$"], ["\\\\(", "\\\\)"]],
-       displayMath: [["$$", "$$"], ["\\\\[", "\\\\]"]],
-       processEscapes: true,
-       processEnvironments: true,
-     },
-     options: {
-       renderActions: { /* remove when dropping MathJax2 compatibility */
-         find_script_mathtex: [10, function (doc) {
-           for (const node of document.querySelectorAll('script[type^="math/tex"]')) {
-             const display = !!node.type.match(/; *mode=display/);
-             const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
-             const text = document.createTextNode('');
-             node.parentNode.replaceChild(text, node);
-             math.start = { node: text, delim: '', n: 0 };
-             math.end = { node: text, delim: '', n: 0 };
-             doc.math.push(math);
-           }
-         }, '']
-       }
-     }
-   };</script>
-   <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js"></script>
+ <!-- KaTeX -->
+  <script src="https://dahn-research.eu/nbplayer/vendor/js/vendor/katex.min.js"></script>
+  <script src="https://dahn-research.eu/nbplayer/vendor/js/vendor/katex-auto-render.min.js"></script>
+  <link rel="stylesheet" href="https://dahn-research.eu/nbplayer/vendor/css/vendor/katex.min.css">
  <script src="https://sagecell.sagemath.org/embedded_sagecell.js"></script>
  <script src="`+data.system+`/ytcontrol-min.js"></script>
  <script src="`+data.system+`/ytrunner-min.js"></script>
@@ -175,7 +155,7 @@ function saveHtml() {
     makeYtPlayer();
     makeToc();
     makeSageCells();
-    window.MathJax.typeset();
+    renderMathInElement(document.body, { delimiters: [{ left: "$$", right: "$$", display: true }, { left: "$", right: "$", display: false }] });
   </script>
   </body></html>`], {type: "text/plain;charset=utf-8"});
   saveAs(blob, "testplayer.html");
