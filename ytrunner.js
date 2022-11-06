@@ -119,8 +119,9 @@ function calcNext() {
   syncTo(nextTime);
 }
 
+// Start saving
 function saveHtml() {
-  saveAddSageCells(".nb-code-cell",".sagecell_input,.sagecell_output");
+  //TODO: saveAddSageCells(".code-cell",".sagecell_input,.sagecell_output");
   $('script').html().replace(/\u200B/g,'');
   var blob = new Blob(['<!DOCTYPE html>\n<html>\n<head>'+
  `<head>
@@ -130,8 +131,8 @@ function saveHtml() {
  <script src="https://cdn.jsdelivr.net/remarkable/1.7.1/remarkable.min.js"></script>
  <script type="text/javascript">window.MathJax = {
      tex: {
-       inlineMath: [["$", "$"], ["\\(", "\\)"]],
-       displayMath: [["$$", "$$"], ["\\[", "\\]"]],
+       inlineMath: [["$", "$"], ["\\\\(", "\\\\)"]],
+       displayMath: [["$$", "$$"], ["\\\\[", "\\\\]"]],
        processEscapes: true,
        processEnvironments: true,
      },
@@ -151,10 +152,11 @@ function saveHtml() {
        }
      }
    };</script>
+   <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js"></script>
  <script src="https://sagecell.sagemath.org/embedded_sagecell.js"></script>
- <script src="`+data.system+`/ytcontrol.js"></script>
- <script src="`+data.system+`/ytrunner.js"></script>
- <link rel="stylesheet" href="`+data.system+`/ytactivator.css">
+ <script src="`+data.system+`/ytcontrol-min.js"></script>
+ <script src="`+data.system+`/ytrunner-min.js"></script>
+ <link rel="stylesheet" href="`+data.system+`/ytactivator-min.css">
 </head>\n<body>\n<div id="main">
 <row>
       <div id="player-nav">
@@ -163,14 +165,17 @@ function saveHtml() {
         <button id="calcNext" type="button" class="btn btn-primary" onclick="calcNext()">Next Calculation</button>
         <button id="save" type="button" class="btn btn-primary" onclick="saveHtml()">Save</button>
       </div>
-    </row>`+
+    </row>
+    <div id='notebook-wrapper'>`+
   $('#notebook-wrapper').html()+
   `</div>
+  </div>
   <script>
     var data =`+ JSON.stringify(data) +`;
     makeYtPlayer();
     makeToc();
     makeSageCells();
+    window.MathJax.typeset();
   </script>
   </body></html>`], {type: "text/plain;charset=utf-8"});
   saveAs(blob, "testplayer.html");
@@ -194,6 +199,15 @@ function saveAddSageCells(rootNode,delNode) {
     $(this).find('.compute').hide();
   });
 }
+
+function getSageInput(rootNode) {
+  let scScript='';
+  rootNode.find('.CodeMirror-line').each(function () {
+    scScript += $(this).text()+'\n';
+  })
+  return scScript;
+}
+// End Saving
 
 function makeToc() {
   for (let i = 0; i< data.segments.length; i++) {

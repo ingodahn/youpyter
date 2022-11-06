@@ -51,7 +51,7 @@ function activate(nbString) {
 
 function makeCodeCell(cell, i) {
     var code = (cell.source) ? cell.source.join('') : "";
-    var cellDiv = $('<div class="cell" id="cell' + i + '"></div>');
+    var cellDiv = $('<div class="cell code-cell" id="cell' + i + '"></div>');
     cellDiv.append('<div class="cell-input">' + sageCell(code) + '</div>');
     addCell(cell, i);
     $('#calcNext').css('visibility', 'visible');
@@ -72,7 +72,7 @@ function makeMarkdownCell(cell, i) {
     } else {
         var md = new Remarkable({ html: true, breaks: true, linkify: true });
         var html = md.render(mdContent);
-        var cellDiv = $('<div class="cell row" id="cell' + i + '"></div>');
+        var cellDiv = $('<div class="cell markdown-cell row" id="cell' + i + '"></div>');
         cellDiv.append('<div class="cell-input">' + html + '</div>');
         addCell(cell, i);
         return cellDiv;
