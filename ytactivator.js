@@ -73,7 +73,7 @@ function makeMarkdownCell(cell, i) {
         var md = new Remarkable({ html: true, breaks: true, linkify: true });
         var html = md.render(mdContent);
         var cellDiv = $('<div class="cell markdown-cell row" id="cell' + i + '"></div>');
-        cellDiv.append('<div class="cell-input">' + html + '</div>');
+        cellDiv.append('<div>' + html + '</div>');
         addCell(cell, i);
         return cellDiv;
     }
