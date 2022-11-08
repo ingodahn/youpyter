@@ -72,10 +72,20 @@ function checkTime() {
         if (data.breakpoints[currentTime]) {
             ytPause();
             syncTo(currentTime);
+            document.getElementById('toc').selectedIndex = sectionIndex(currentTime);
             lastTime = currentTime;
         }
     }
     setTimeout(checkTime, 200);
+}
+
+function sectionIndex(time) {
+    for (var i = 0; i < data.segments.length; i++) {
+        if (data.segments[i].start <= time && time < data.segments[i].end) {
+            return i;
+        }
+    }
+    return -1;
 }
 
 function ytPlay() {

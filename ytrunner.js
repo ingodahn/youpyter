@@ -123,7 +123,16 @@ function calcNext() {
 function saveHtml() {
   saveAddSageCells(".code-cell", ".sagecell_input,.sagecell_output");
   saveInitEvaluated();
-  $('script').html().replace(/\u200B/g, '');
+  //$('script').html().replace(/\u200B/g, '');
+  let cs = document.getElementsByClassName('code-cell');
+  for (let i = 0; i < cs.length; i++) {
+    cs[i].innerHTML = cs[i].innerHTML.replace(/\u200B/g, '');
+  }
+  let mds = document.getElementsByClassName('markdown-cell');
+  for (let i = 0; i < mds.length; i++) {
+    mds[i].innerHTML = mds[i].innerHTML.replace(/\u2212+/g, '-');
+    mds[i].innerHTML = mds[i].innerHTML.replace(/\u2032+/g, '\'');
+  }
   var blob = new Blob(['<!DOCTYPE html>\n<html>\n<head>' +
     `<head>
  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
@@ -157,14 +166,15 @@ function saveHtml() {
     makeToc();
     makeSageCells();
     syncTo(0);
-    renderMathInElement(document.body, { delimiters: [{ left: "$$", right: "$$", display: true }, { left: "$", right: "$", display: false }] });
+    renderMathInElement(document.body, { delimiters: [{ left: "$$", right: "$$", display: true, strict: false }, { left: "$", right: "$", display: false }] });
   </script>
   </body></html>`], { type: "text/plain;charset=utf-8" });
   saveAs(blob, "testplayer.html");
   let saveWarnMsg = 'Do NOT use this page anymore - open your saved copy or reload this page.';
   var lang = getBrowserLanguage();
   if (lang == 'de') saveWarnMsg = 'Bitte die Seite neu laden oder die gespeicherte Kopie öffnen.';
-  $('#navbar').html('<div class="save-warning">' + saveWarnMsg + '</div>');
+  //$('#navbar').html('<div class="save-warning">' + saveWarnMsg + '</div>');
+  alert(saveWarnMsg);
 }
 
 function saveAddSageCells(rootNode, delNode) {

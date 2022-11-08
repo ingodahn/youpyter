@@ -43,7 +43,7 @@ function activate(nbString) {
                 if (mdcell) $('#notebook-wrapper').append(mdcell);
             }
         }
-        renderMathInElement(document.body, { delimiters: [{ left: "$$", right: "$$", display: true }, { left: "$", right: "$", display: false }] });
+        renderMathInElement(document.body, { delimiters: [{ left: "$$", right: "$$", display: true, strict: false }, { left: "$", right: "$", display: false }] });
     } catch (error) {
         $('#main').append("<p>Error: " + error + "</p>");
     }
