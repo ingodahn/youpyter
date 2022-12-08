@@ -16,6 +16,7 @@ function syncTo(time) {
     }
   }
   checkEvaluated();
+  if (!firstcell) firstcell = '#'+data.nbCells[data.nbCells.length-1].content;
   $(firstcell)[0].scrollIntoView({ behavior: "smooth", block: "center", inline: "nearest" });
 }
 
@@ -139,6 +140,8 @@ function saveHtml() {
  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
  <script src="`+ data.system + `/vendor/js/FileSaver.min.js"></script>
  <script src="https://cdn.jsdelivr.net/remarkable/1.7.1/remarkable.min.js"></script>
+ <meta charset="utf-8">
+ <title>` + data.name + `</title>
  <!-- KaTeX -->
   <script src="https://dahn-research.eu/nbplayer/vendor/js/vendor/katex.min.js"></script>
   <script src="https://dahn-research.eu/nbplayer/vendor/js/vendor/katex-auto-render.min.js"></script>
@@ -169,7 +172,7 @@ function saveHtml() {
     renderMathInElement(document.body, { delimiters: [{ left: "$$", right: "$$", display: true, strict: false }, { left: "$", right: "$", display: false }] });
   </script>
   </body></html>`], { type: "text/plain;charset=utf-8" });
-  saveAs(blob, "testplayer.html");
+  saveAs(blob, data.name+".html");
   let saveWarnMsg = 'Do NOT use this page anymore - open your saved copy or reload this page.';
   var lang = getBrowserLanguage();
   if (lang == 'de') saveWarnMsg = 'Bitte die Seite neu laden oder die gespeicherte Kopie öffnen.';

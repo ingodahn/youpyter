@@ -6,12 +6,14 @@ var data = {
     kernel: 'sage',
     system: ytactivatorPath,
     video: null,
+    name: 'ytActivator'
   }
   
 
 function readURL(input) {
     if (input.files && input.files[0]) {
-
+        alert(input.files[0].name);
+        data.name=input.files[0].name.substring(0, input.files[0].name.lastIndexOf('.'));
         var reader = new FileReader();
 
         reader.onload = function (e) {
@@ -33,7 +35,6 @@ function activate(nbString) {
         if (kernel.includes('sage')) {
             kernel = 'sage';
         }
-
         for (var i = 0; i < nb.cells.length; i++) {
             var cell = nb.cells[i];
             if (cell.cell_type == "code") {
@@ -70,8 +71,9 @@ function makeMarkdownCell(cell, i) {
         makeYtPlayer();
         return null;
     } else {
-        var md = new Remarkable({ html: true, breaks: true, linkify: true });
-        var html = md.render(mdContent);
+        var md = new Remarkable({ html: true, breaks: false, linkify: true });
+        var mdContent0 = mdContent.replace(/\\\\/g, '\\\\\\\\');
+        var html = md.render(mdContent0);
         var cellDiv = $('<div class="cell markdown-cell row" id="cell' + i + '"></div>');
         cellDiv.append('<div>' + html + '</div>');
         addCell(cell, i);
@@ -129,5 +131,7 @@ function addCell(cell, i) {
         let cellSectionId = cell.metadata.in;
         let cellSection = data.segments.find(s => s.id == cellSectionId);
         data.nbCells.push({ content: "cell" + i, start: cellSection.start, end: cellSection.end, cellType: cell.cell_type, cellEvaluated: false });
+    } else {
+        throw 'Cell ' + i + ' has no section';
     }
 }
