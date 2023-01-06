@@ -84,34 +84,18 @@ body {
 }
 
 #player-nav {
+  overflow: hidden;
   text-align: center;
   position: sticky;
   top: 0;
   width: 100%;
   background-color: white;
-  z-index: 100;
-  visibility: hidden;
-}
-
-#player-wrapper {
-  text-align: center;
-  position: sticky;
-  top: 0;
-  width: 100%;
-  background-color: white;
-  z-index: 100;
-}
-
-#to {
-  position: sticky;
-  top: 0;
-  width: 100%;
-  background-color: white;
-  z-index: 100;
+  z-index: 1;
 }
 
 #notebook-wrapper {
-  z-index: 1;
+  margin-top: 100px;
+  z-index: 0;
 }
 
 .current-cell {

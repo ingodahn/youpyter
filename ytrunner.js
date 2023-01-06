@@ -5,19 +5,41 @@ function getBrowserLanguage() {
   return lang;
 }
 
+const getScrollParent = (node) => {
+  if (node === null) {
+    return null;
+  }
+
+  if (node.scrollHeight > node.clientHeight) {
+    return node;
+  } else {
+    return getScrollParent(node.parentNode);
+  }
+}
+
 function syncTo(time) {
   $('.cell').removeClass('current-cell');
   let firstcell = null;
   for (var i = 0; i < data.nbCells.length; i++) {
     if (time >= data.nbCells[i].start && time < data.nbCells[i].end) {
-      let cname = '#' + data.nbCells[i].content;
+      let cname = data.nbCells[i].content;
       if (!firstcell) firstcell = cname;
       $(cname).addClass('current-cell');
     }
   }
   checkEvaluated();
-  if (!firstcell) firstcell = '#'+data.nbCells[data.nbCells.length-1].content;
-  $(firstcell)[0].scrollIntoView({ behavior: "smooth", block: "center", inline: "nearest" });
+  if (!firstcell) firstcell = data.nbCells[data.nbCells.length - 1].content;
+  //let cellTop=$(firstcell)[0].getBoundingClientRect().top;
+  //let playerBottom=$('#player-nav')[0].getBoundingClientRect().bottom;
+  //$('#notebook-wrapper')[0].scrollTo({ top: cellTop, behavior: "smooth" });
+  //const scrollParent = getScrollParent($(firstcell)[0]);
+  //console.log(scrollParent);
+  //$(firstcell)[0].scrollIntoView({ behavior: "smooth", block: "center", inline: "nearest" });
+  let cell = document.getElementById(firstcell);
+  let nav = document.getElementById("player-nav");
+  let navRects = nav.getClientRects()[0];
+  let cellRects = cell.getClientRects()[0];
+  window.scrollBy({ left: 0, top: cellRects.y - navRects.height, behavior: "smooth" });
 }
 
 function checkEvaluated() {
@@ -154,7 +176,7 @@ function saveHtml() {
 <row>
       <div id="player-nav">
         <div id="player-wrapper"></div>
-        <select id="toc" onchange="if (this.selectedIndex) ytSeekTo(this.selectedIndex)"></select>
+        <select id="toc" onchange="ytSeekTo(this.selectedIndex)"></select>
         <button id="calcNext" type="button" class="btn btn-primary" onclick="calcNext()">Next Calculation</button>
         <button id="save" type="button" class="btn btn-primary" onclick="saveHtml()">Save</button>
       </div>
@@ -167,6 +189,7 @@ function saveHtml() {
     var data =`+ JSON.stringify(data) + `;
     makeYtPlayer();
     makeToc();
+    setCalcSave();
     makeSageCells();
     syncTo(0);
     renderMathInElement(document.body, { delimiters: [{ left: "$$", right: "$$", display: true, strict: false }, { left: "$", right: "$", display: false }] });
@@ -175,7 +198,7 @@ function saveHtml() {
   saveAs(blob, data.name+".html");
   let saveWarnMsg = 'Do NOT use this page anymore - open your saved copy or reload this page.';
   var lang = getBrowserLanguage();
-  if (lang == 'de') saveWarnMsg = 'Bitte die Seite neu laden oder die gespeicherte Kopie öffnen.';
+  if (lang == 'de') saveWarnMsg = 'Bitte die Seite nach dem Speichern neu laden oder die gespeicherte Kopie öffnen.';
   //$('#navbar').html('<div class="save-warning">' + saveWarnMsg + '</div>');
   alert(saveWarnMsg);
 }
@@ -215,5 +238,15 @@ function saveInitEvaluated() {
 function makeToc() {
   for (let i = 0; i < data.segments.length; i++) {
     $('#toc').append('<option value="' + data.segments[i].start + '">' + data.segments[i].title + '</option>');
+  }
+}
+
+function setCalcSave() {
+  let cl = document.getElementsByClassName('code-cell').length;
+  if (cl < 2) {
+    $('#calcNext').hide();
+  }
+  if (cl < 1) {
+    $('#save').hide();
   }
 }

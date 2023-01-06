@@ -12,7 +12,6 @@ var data = {
 
 function readURL(input) {
     if (input.files && input.files[0]) {
-        alert(input.files[0].name);
         data.name=input.files[0].name.substring(0, input.files[0].name.lastIndexOf('.'));
         var reader = new FileReader();
 
@@ -35,6 +34,7 @@ function activate(nbString) {
         if (kernel.includes('sage')) {
             kernel = 'sage';
         }
+        getAllSections(nb.cells);
         for (var i = 0; i < nb.cells.length; i++) {
             var cell = nb.cells[i];
             if (cell.cell_type == "code") {
@@ -54,7 +54,7 @@ function makeCodeCell(cell, i) {
     var code = (cell.source) ? cell.source.join('') : "";
     var cellDiv = $('<div class="cell code-cell" id="cell' + i + '"></div>');
     cellDiv.append('<div class="cell-input">' + sageCell(code) + '</div>');
-    addCell(cell, i);
+    addOneCell(cell, i);
     $('#calcNext').css('visibility', 'visible');
     return cellDiv;
 }
@@ -67,7 +67,7 @@ function makeMarkdownCell(cell, i) {
         cellDiv.append(buttonRow);
         data.video = { videoId: isVideo.id, width: isVideo.width, height: isVideo.height };
         cellDiv.append(makeYtPlayer());
-        getSections(mdContent);
+        //getSections(mdContent);
         makeYtPlayer();
         return null;
     } else {
@@ -76,7 +76,7 @@ function makeMarkdownCell(cell, i) {
         var html = md.render(mdContent0);
         var cellDiv = $('<div class="cell markdown-cell row" id="cell' + i + '"></div>');
         cellDiv.append('<div>' + html + '</div>');
-        addCell(cell, i);
+        addOneCell(cell, i);
         return cellDiv;
     }
 }
@@ -102,7 +102,7 @@ function hasVideo(mdContent) {
         return vpars;
     } else return null;
 }
-
+/*
 function getSections(cell) {
     let cellLines = cell.split('\n');
     for (let i = 0; i < cellLines.length; i++) {
@@ -120,12 +120,43 @@ function getSections(cell) {
     }
     makeToc();
 }
+*/
+function getAllSections(cells) {
+    for (var i = 0; i < cells.length; i++) {
+        var cell = cells[i];
+        if (cell.cell_type == "markdown") {
+            let reTite = /<!--[\s]*Section:(.*)Time/;
+            let line=cell.source[0];
+            let match = reTite.exec(line);
+            if (match) {
+                let title = match[1].trim();
+                let reTime = /Time:(.*)-->/;
+                if (reTime.exec(line)) {
+                    let time = reTime.exec(line)[1].trim();
+                    let section = { title: title, start: time2sec(time), end: 999, cellNr: i, id: "section" + i };
+                    data.segments.push(section);
+                    if (data.segments.length > 1) {
+                        data.segments[data.segments.length - 2].end = section.start;
+                    }
+                    data.breakpoints[section.start] = true; // breakpoints should be a set, but that cannot be serialized
+                    data.breakpoints[section.end] = true;
+                } else {
+                    throw 'Section ' + title + ' has no time';
+                }
+                
+            }
+            
+        }
+    }
+    makeToc();
+}
 
 function time2sec(time) {
     let t = time.split(':'), minutes = +t[0], seconds = +t[1];
     return minutes * 60 + seconds;
   }
 
+  /*
 function addCell(cell, i) {
     if (cell.metadata && cell.metadata.in) {
         let cellSectionId = cell.metadata.in;
@@ -134,4 +165,18 @@ function addCell(cell, i) {
     } else {
         throw 'Cell ' + i + ' has no section';
     }
+}
+*/
+
+function addOneCell(cell, i) {
+    let sectionCellNr = 0;
+    for (j = 0; j < data.segments.length; j++) {
+        if (data.segments[j].cellNr <= i) {
+            sectionCellNr = j;
+        } else {
+            break;
+        }
+    }
+        let cellSection = data.segments[sectionCellNr];
+        data.nbCells.push({ content: "cell" + i, start: cellSection.start, end: cellSection.end, cellType: cell.cell_type, cellEvaluated: false });
 }

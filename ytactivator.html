@@ -16,7 +16,7 @@
 </head>
 
 <body>
-  <div id="main">
+  <div id="main" class="grid-container">
 
     <div class="file-upload">
       <h2 id="welcome">Welcome to the YouTube Activator</h2>
@@ -30,22 +30,25 @@
         </div>
       </div>
     </div>
-    <row>
-      <div id="player-nav">
+    
+      <div id="player-nav" class="grid-item">
         <div id="player-wrapper"></div>
-        <select id="toc" onchange="if (this.selectedIndex) ytSeekTo(this.selectedIndex)"></select>
+        <select id="toc" onchange="ytSeekTo(this.selectedIndex)"></select>
         <button id="calcNext" type="button" class="btn btn-primary" onclick="calcNext()">Next Calculation</button>
         <button id="save" type="button" class="btn btn-primary" onclick="saveHtml()">Save</button>
       </div>
-    </row>
-    <row>
-      <div id="notebook-wrapper"></div>
-    </row>
+    
+    
+      <div id="notebook-wrapper" class="grid-item"></div>
+    
 
   </div>
   <script src="./ytactivatorConfig.js"></script>
   <script src="./ytcontrol-min.js"></script>
-  <script src="./ytrunner-min.js"></script>
+  <!--
+    <script src="./ytrunner-min.js"></script>
+  -->
+  <script src="./ytrunner.js"></script>
   <script src="./ytactivator-min.js"></script>
 </body>
 
