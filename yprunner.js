@@ -29,12 +29,6 @@ function syncTo(time) {
   }
   checkEvaluated();
   if (!firstcell) firstcell = data.nbCells[data.nbCells.length - 1].content;
-  //let cellTop=$(firstcell)[0].getBoundingClientRect().top;
-  //let playerBottom=$('#player-nav')[0].getBoundingClientRect().bottom;
-  //$('#notebook-wrapper')[0].scrollTo({ top: cellTop, behavior: "smooth" });
-  //const scrollParent = getScrollParent($(firstcell)[0]);
-  //console.log(scrollParent);
-  //$(firstcell)[0].scrollIntoView({ behavior: "smooth", block: "center", inline: "nearest" });
   let cell = document.getElementById(firstcell);
   let nav = document.getElementById("player-nav");
   let navRects = nav.getClientRects()[0];
@@ -144,6 +138,7 @@ function calcNext() {
 
 // Start saving
 function saveHtml() {
+  $('.playButton img').attr('src', data.system+'/images/play.png');
   saveAddSageCells(".code-cell", ".sagecell_input,.sagecell_output");
   saveInitEvaluated();
   //$('script').html().replace(/\u200B/g, '');
@@ -159,7 +154,8 @@ function saveHtml() {
   var blob = new Blob(['<!DOCTYPE html>\n<html>\n<head>' +
     `<head>
  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
+ <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN" crossorigin="anonymous"></script>
  <script src="`+ data.system + `/vendor/js/FileSaver.min.js"></script>
  <script src="https://cdn.jsdelivr.net/remarkable/1.7.1/remarkable.min.js"></script>
  <meta charset="utf-8">
@@ -169,13 +165,13 @@ function saveHtml() {
   <script src="https://dahn-research.eu/nbplayer/vendor/js/vendor/katex-auto-render.min.js"></script>
   <link rel="stylesheet" href="https://dahn-research.eu/nbplayer/vendor/css/vendor/katex.min.css">
  <script src="https://sagecell.sagemath.org/embedded_sagecell.js"></script>
- <script src="`+ data.system + `/ytcontrol-min.js"></script>
- <script src="`+ data.system + `/ytrunner-min.js"></script>
  <link rel="stylesheet" href="`+ data.system + `/ytactivator-min.css">
 </head>\n<body>\n<div id="main">
 <row>
       <div id="player-nav">
         <div id="player-wrapper"></div>
+        <button type="button" class="btn btn-primary playButton" onclick="playToggle()"><img src="`+ data.system + `/images/play.png"
+          width="20px"></img></button>
         <select id="toc" onchange="ytSeekTo(this.selectedIndex)"></select>
         <button id="calcNext" type="button" class="btn btn-primary" onclick="calcNext()">Next Calculation</button>
         <button id="save" type="button" class="btn btn-primary" onclick="saveHtml()">Save</button>
@@ -187,6 +183,11 @@ function saveHtml() {
   </div>
   <script>
     var data =`+ JSON.stringify(data) + `;
+    const ytactivatorPath = "`+ data.system + `";
+  </script>
+  <script src="`+ data.system + `/ytcontrol-min.js"></script>
+ <script src="`+ data.system + `/ytrunner-min.js"></script>
+  <script>
     makeYtPlayer();
     makeToc();
     setCalcSave();
@@ -195,7 +196,7 @@ function saveHtml() {
     renderMathInElement(document.body, { delimiters: [{ left: "$$", right: "$$", display: true, strict: false }, { left: "$", right: "$", display: false }] });
   </script>
   </body></html>`], { type: "text/plain;charset=utf-8" });
-  saveAs(blob, data.name+".html");
+  saveAs(blob, data.name + ".html");
   let saveWarnMsg = 'Do NOT use this page anymore - open your saved copy or reload this page.';
   var lang = getBrowserLanguage();
   if (lang == 'de') saveWarnMsg = 'Bitte die Seite nach dem Speichern neu laden oder die gespeicherte Kopie öffnen.';

@@ -1,8 +1,10 @@
 /* Setting up youtube player */
 var player;
+let imgPath = youpyterPath + '/images/';
 
 const buttonRow = `
-<div class="row">
+<div>
+<!--
     <div class="btn-group">
         <button id="play" type="button" class="btn btn-primary disabled" onClick="ytPlay()">Play</button>
         <button id="pause" type="button" class="btn btn-primary disabled" onClick="ytPause()">Pause</button>
@@ -13,8 +15,9 @@ const buttonRow = `
         <button id="speed" type="button" class="btn btn-primary disabled" onClick="ytSpeedUp()">Speed Up</button>
         <button id="slow" type="button" class="btn btn-primary disabled" onClick="ytSlowDown()">Slow Down</button>
     </div>
+    -->
 </div>
-<div class="row">
+<div>
     <div id="player-container">
         <div id="player-div"></div>
     </div>
@@ -66,7 +69,11 @@ function onPlayerStateChange(event) {
 
 var lastTime = 0;
 function checkTime() {
-    if (player.getPlayerState() != YT.PlayerState.PLAYING) return;
+    if (player.getPlayerState() != YT.PlayerState.PLAYING) {
+        $('.playButton img').attr('src', imgPath + 'play.png');
+        return;
+    }
+    $('.playButton img').attr('src', imgPath + 'pause.png');
     var currentTime = Math.floor(player.getCurrentTime());
     if (currentTime != lastTime) {
         if (data.breakpoints[currentTime]) {
@@ -92,7 +99,9 @@ function ytPlay() {
     player.playVideo();
 }
 
-function ytPause() { player.pauseVideo(); }
+function ytPause() {
+    player.pauseVideo();
+    $('.playButton img').attr('src', imgPath + '/play.png');}
 
 function ytStop() { player.stopVideo(); }
 
@@ -143,4 +152,28 @@ function makeYtPlayer() {
     $('#player-nav').css('visibility', 'visible');
 }
 
+function playToggle() {
+    if (player.getPlayerState() == YT.PlayerState.PLAYING) {
+        ytPause();
+        $('.playButton img').attr('src', imgPath + '/play.png');
+    }
+    else {
+        ytPlay();
+        $('.playButton img').attr('src', imgPath + 'pause.png');
+    }
+}
+
+$(document).ready(function () {
+    $('.playButton img').attr('src', imgPath + 'play.png');
+})
 // End youtube player setup
+
+function playButton(i) {
+    return '<button type="button" class="btn btn-primary playButton" onclick="playCell(' + i + ')"><image src="'+imgPath+'/play.png" width="20px"></button>';
+}
+
+function playCell(i) {
+    let cell = data.segments[i];
+    ytSeekTo(i);
+    playToggle();
+}

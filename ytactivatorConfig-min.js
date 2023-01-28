@@ -1,1 +1,0 @@
-const ytactivatorPath="https://dahn-research.eu/ytactivator";

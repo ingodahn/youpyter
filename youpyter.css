@@ -79,7 +79,10 @@ body {
 }
 
 .cell {
-  display: block;
+  margin: 1em;
+}
+
+.side {
   margin: 1em;
 }
 
@@ -91,6 +94,7 @@ body {
   width: 100%;
   background-color: white;
   z-index: 1;
+  visibility: hidden;
 }
 
 #notebook-wrapper {
