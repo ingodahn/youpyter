@@ -31,9 +31,31 @@ function activate(nbString) {
     try {
         $('.file-upload').remove();
         var nb = JSON.parse(atob(nbString.split(',')[1]));
-        kernel = nb.metadata.kernelspec.name;
+        let kernel0 = nb.metadata.kernelspec.language;
+        let kernel = kernel0.toLowerCase();
         if (kernel.includes('sage')) {
-            kernel = 'sage';
+            data.kernel = 'sage';
+        } else if (kernel.includes('python')) {
+            data.kernel = 'python';
+        } else if (kernel.includes('singular')) {
+            data.kernel = 'singular';
+        } else if (kernel.includes('octave')) {
+            data.kernel = 'octave';
+        } else if (kernel.includes('maxima')) {
+            data.kernel = 'maxima';
+        } else if (kernel.includes('html')) {
+            data.kernel = 'html';
+        } else if (kernel.includes('gp')) {
+            data.kernel = 'gp';
+        } else if (kernel.includes('r')) {
+            data.kernel = 'r';
+        } else if (kernel.includes('gap')) {
+            data.kernel = 'gap';
+        } else if (kernel.includes('macauley2')) {
+            data.kernel = 'macauley2';
+        } else {
+            alert('Kernel ' + kernel0 + ' not supported, using Sage (default)');
+            data.kernel = 'sage';
         }
         getAllSections(nb.cells);
         getVideo(nb.cells[0]);

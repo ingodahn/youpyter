@@ -28,6 +28,8 @@ function syncTo(time) {
     }
   }
   checkEvaluated();
+  console.log('Run-30 firstCell:', firstcell);
+  console.log('Run-31 nbCells:', data.nbCells);
   if (!firstcell) firstcell = data.nbCells[data.nbCells.length - 1].content;
   let cell = document.getElementById(firstcell);
   let nav = document.getElementById("player-nav");
@@ -71,7 +73,7 @@ function makeSageCells() {
   sagecell.makeSagecell({
     inputLocation: ".compute",
     linked: true,
-    language: data.kernel,
+    languages: [data.kernel],
     callback: () => {
       $('.sagecell_evalButton').click(function () {
         let node = this.parentNode.parentNode.parentNode.parentNode;
@@ -160,12 +162,14 @@ function saveHtml() {
  <script src="https://cdn.jsdelivr.net/remarkable/1.7.1/remarkable.min.js"></script>
  <meta charset="utf-8">
  <title>` + data.name + `</title>
- <!-- KaTeX -->
-  <script src="https://dahn-research.eu/nbplayer/vendor/js/vendor/katex.min.js"></script>
-  <script src="https://dahn-research.eu/nbplayer/vendor/js/vendor/katex-auto-render.min.js"></script>
-  <link rel="stylesheet" href="https://dahn-research.eu/nbplayer/vendor/css/vendor/katex.min.css">
+ <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css" integrity="sha384-vKruj+a13U8yHIkAyGgK1J3ArTLzrFGBbBc0tDp4ad/EyewESeXE/Iv67Aj8gKZ0" crossorigin="anonymous">
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.js" integrity="sha384-PwRUT/YqbnEjkZO0zZxNqcxACrXe+j766U2amXcgMg5457rve2Y7I6ZJSm2A0mS4" crossorigin="anonymous"></script>
+  <!-- To automatically render math in text elements, include the auto-render extension: -->
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/contrib/auto-render.min.js" integrity="sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05" crossorigin="anonymous"
+        onload="renderMathInElement(document.body);"></script>
  <script src="https://sagecell.sagemath.org/embedded_sagecell.js"></script>
- <link rel="stylesheet" href="`+ data.system + `/ytactivator-min.css">
+ <link rel="stylesheet" href="`+ data.system + `/youpyter-min.css">
+ <link rel="stylesheet" href="./custom.css">
 </head>\n<body>\n<div id="main">
 <row>
       <div id="player-nav">
@@ -183,10 +187,10 @@ function saveHtml() {
   </div>
   <script>
     var data =`+ JSON.stringify(data) + `;
-    const ytactivatorPath = "`+ data.system + `";
+    const youpyterPath = "`+ data.system + `";
   </script>
   <script src="`+ data.system + `/ytcontrol-min.js"></script>
- <script src="`+ data.system + `/ytrunner-min.js"></script>
+ <script src="`+ data.system + `/yprunner-min.js"></script>
   <script>
     makeYtPlayer();
     makeToc();
@@ -195,6 +199,7 @@ function saveHtml() {
     syncTo(0);
     renderMathInElement(document.body, { delimiters: [{ left: "$$", right: "$$", display: true, strict: false }, { left: "$", right: "$", display: false }] });
   </script>
+  <script src="./custom.js"></script>
   </body></html>`], { type: "text/plain;charset=utf-8" });
   saveAs(blob, data.name + ".html");
   let saveWarnMsg = 'Do NOT use this page anymore - open your saved copy or reload this page.';
