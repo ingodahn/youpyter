@@ -1,7 +1,6 @@
 /* Setting up youtube player */
 var player;
 let imgPath = youpyterPath + '/images/';
-
 const buttonRow = `
 <div>
 <!--
@@ -147,9 +146,15 @@ function ytSeekTo(index) {
 }
 
 function makeYtPlayer() {
-    $('#player-wrapper').html(buttonRow);
-    loadYtApi();
-    $('#player-nav').css('visibility', 'visible');
+    try {
+        $('#player-wrapper').html(buttonRow);
+        loadYtApi();
+        $('#player-nav').css('visibility', 'visible');
+    }
+    catch (error) {
+        alert("Error creating YouTube player: " + error);
+    }
+    
 }
 
 function playToggle() {

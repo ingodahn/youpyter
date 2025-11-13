@@ -1,1 +1,0 @@
-const youpyterPath="https://dahn-research.eu/youpyter";

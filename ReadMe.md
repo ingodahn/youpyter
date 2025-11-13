@@ -4,7 +4,7 @@ Youpyter converts a jupyter notebook with a youtube video into a webpage with no
 
 ## Installation
 
-Copy this folder onto your web server. rename `youpyter-min.html`to `index.html` and edit `youpyterConfig.js` to let `youpyterPath` point to your instance.
+Copy this folder onto your web server. rename `youpyter.min.html`to `index.html` and edit `youpyterConfig.js` to let `youpyterPath` point to your instance.
 
 ## Availability
 

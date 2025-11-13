@@ -29,6 +29,7 @@ function readURL(input) {
 
 function activate(nbString) {
     try {
+        console.log('Activating notebook');
         $('.file-upload').remove();
         var nb = JSON.parse(atob(nbString.split(',')[1]));
         let kernel0 = nb.metadata.kernelspec.language;
@@ -111,7 +112,7 @@ function makeMarkdownCell(cell, i) {
 }
 
 function hasVideo(mdContent) {
-    let reId = /\"https:\/\/www.youtube.*\.com\/embed\/([^\"]*)\"/mg;
+    let reId = /\"https:\/\/www.youtube.*\.com\/embed\/([^\"?]*)[\"?]/mg;
     let match = reId.exec(mdContent);
     if (match) {
         let ytId = match[1];
@@ -128,7 +129,7 @@ function hasVideo(mdContent) {
             height = matchHeight[1];
         }
         let vpars = { id: ytId, width: width, height: height };
-        console.log(vpars);
+        let formattedVpars = `Video ID: ${vpars.id}\nWidth: ${vpars.width}\nHeight: ${vpars.height}`;
         return vpars;
     } else return null;
 }

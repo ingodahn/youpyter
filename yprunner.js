@@ -168,7 +168,7 @@ function saveHtml() {
   <script src="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/contrib/auto-render.min.js" integrity="sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05" crossorigin="anonymous"
         onload="renderMathInElement(document.body);"></script>
  <script src="https://sagecell.sagemath.org/embedded_sagecell.js"></script>
- <link rel="stylesheet" href="`+ data.system + `/youpyter-min.css">
+ <link rel="stylesheet" href="`+ data.system + `/youpyter.min.css">
  <link rel="stylesheet" href="./custom.css">
 </head>\n<body>\n<div id="main">
 <row>
@@ -189,8 +189,8 @@ function saveHtml() {
     var data =`+ JSON.stringify(data) + `;
     const youpyterPath = "`+ data.system + `";
   </script>
-  <script src="`+ data.system + `/ytcontrol-min.js"></script>
- <script src="`+ data.system + `/yprunner-min.js"></script>
+  <script src="`+ data.system + `/ytcontrol.min.js"></script>
+ <script src="`+ data.system + `/yprunner.min.js"></script>
   <script>
     makeYtPlayer();
     makeToc();
