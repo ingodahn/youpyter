@@ -8,9 +8,9 @@ Copy this folder onto your web server. rename `youpyter.min.html`to `index.html`
 
 ## Availability
 
-Youpyter is available at https://dahn-research.eu/youpyter/
+Youpyter is available at https://service.dahn-research.de/youpyter/
 
-A sample page, converted from the Jupyter notebook at https://cocalc.com/ingodahn/mathtrek/KhanGradient-1, is available at https://mathtrek.eu/Release/KhanGradient_1.html
+A sample page, converted from the Jupyter notebook at https://service.dahn-research.de/KhanGradient/KhanGradient_1.ypnb, is available at https://service.dahn-research.de/KhanGradient/KhanGradient_1.html
 
 ## License
 
